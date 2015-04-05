@@ -1,4 +1,5 @@
 Jesse Prevéy
+
 Udacity Full Stack Web Developer Nanodegree Project 2
 
 To run this file, you'll need Vagrant and VirtualBox installed.
