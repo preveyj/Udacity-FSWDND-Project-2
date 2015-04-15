@@ -5,7 +5,9 @@ print "Hello World!"
 
 conn = psycopg2.connect("dbname=tournament")
 
-print conn
+if conn != None :
+	print "Connection is established"
+	print conn
 
 cur = conn.cursor()
 
