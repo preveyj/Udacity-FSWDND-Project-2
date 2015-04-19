@@ -34,13 +34,6 @@ drop database if exists tournament;
 create database tournament;
 \c tournament;
 
-
---=tbl_tournaments table:
-create table tbl_tournaments (
-	id serial primary key,
-	insert_time timestamp not null
-);
-
 --tbl_players table
 create table tbl_players (
 	id serial primary key,
