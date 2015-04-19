@@ -60,13 +60,10 @@ CREATE TABLE tbl_matches (
 		
 --vw_wincount view:
 create view vw_wincount as
-	select tbl_players.id as winner_id, coalesce(count(matches.winner_id), 0) as wins 
-	from tbl_players left outer join (
-		select winner_id, loser_id, result
-		from tbl_matches
-		where result = true
-	) as matches on tbl_players.id = matches.winner_id
-	group by tbl_players.id 
+	select tbl_matches.winner_id, count(tbl_matches.winner_id) as wins 
+	from tbl_matches
+	where tbl_matches.result = true 
+	group by tbl_matches.winner_id 
 	order by wins desc;
 
 --vw_opponents

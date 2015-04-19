@@ -17,8 +17,7 @@ def deleteMatches():
 	conn = connect()
 	if conn != None:
 		cur = conn.cursor()
-		cur.execute("TRUNCATE TABLE tbl_matches")
-		conn.commit()
+		cur.execute("DELETE FROM tbl_matches")
 		cur.close()
 		conn.close()
 
@@ -28,8 +27,7 @@ def deletePlayers():
 	conn = connect()
 	if conn != None:
 		cur = conn.cursor()
-		cur.execute("TRUNCATE TABLE tbl_players")
-		conn.commit()
+		cur.execute("DELETE FROM tbl_players")
 		cur.close()
 		conn.close()
 
@@ -43,7 +41,7 @@ def countPlayers():
 		playerCount = cur.fetchone()[0]
 		cur.close()
 		conn.close()
-		""" print "Count of Players is " + str(playerCount) """
+	
 	
 	return playerCount
 
@@ -59,10 +57,8 @@ def registerPlayer(name):
 	"""
 	conn = connect()
 	if conn != None:
-		""" print "Now registering player """
 		cur = conn.cursor()
-		cur.execute("INSERT INTO tbl_players (name) values (%(theName)s);", {'theName': name})
-		conn.commit()
+		cur.execute("INSERT INTO tbl_players (name) values (%(theName)s);", {"theName", name})
 		cur.close()
 		conn.close()
 	
@@ -86,23 +82,13 @@ def playerStandings():
 	if conn != None:
 		cur = conn.cursor()
 		cur.execute("SELECT winner_id, name, wins, matchcount FROM vw_rankings")
-		
-		if cur.rowcount == 0:
-			cur.execute("SELECT id as winner_id, name, 0 as wins, 0 as matchcount FROM tbl_players")
-			""" print cur """
-		
 		for record in cur:
-			""" print record """
-			""" results.append(("id": record[0], "name": record[1], "wins": record[2], "matches": record[3])) """
-			results.append((record[0],record[1],record[2],record[3]))
+			results.append({"id": record.winner_id, "name": record.name, "wins": record.wins, "matches": record.matchcount})
 		
 		cur.close()
 		conn.close()
-	
-	""" 
-	print "playerStandings()"
+		
 	print results
-	"""
 	return results
 
 def reportMatch(winner, loser):
@@ -116,8 +102,7 @@ def reportMatch(winner, loser):
 	conn = connect()
 	if conn != None:
 		cur = conn.cursor()
-		cur.execute("INSERT INTO tbl_Matches (winner_id, loser_id, result) values (%s, %s, true);", (winner, loser))
-		conn.commit()
+		cur.execute("INSERT INTO tbl_Matches (winner_id, loser_id, result) values (%s, %s, true);", {winner, loser})
 		cur.close()
 		conn.close()
  
@@ -143,9 +128,9 @@ def swissPairings():
 	
 	x = 0
 	while x < len(rankings) :
-		thePairings.append((rankings[x][0], rankings[x][1], rankings[x + 1][0], rankings[x + 1][1]))
+		thePairings.append({"id1": rankings[x].id, "name1" : rankings[x].name, "id2" : rankings[x + 1].id, "name2" : rankings[x + 1].name})
 		
 		x = x + 2
 		
-	""" print thePairings """
+	print thePairings
 	return thePairings
