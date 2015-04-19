@@ -54,7 +54,9 @@ def registerPlayer(name):
 	conn = connect()
 	if conn != None:
 		cur = conn.cursor()
-		cur.execute("INSERT INTO tbl_players (name) values (
+		cur.execute("INSERT INTO tbl_players (name) values (%(theName)s);", {"theName", name})
+		cur.close()
+		conn.close()
 	
 
 def playerStandings():
@@ -70,7 +72,17 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
-
+    results = []
+    
+    conn = connect()
+    if conn != None:
+    	cur = conn.cursor()
+		cur.execute("SELECT winner_id, name, wins, matchcount FROM vw_rankings")
+		for record in cur:
+			results.append({record.winner_id, record.name, record.wins, record.matchcount})
+		
+		cur.close()
+		conn.close()
 
 def reportMatch(winner, loser):
     """Records the outcome of a single match between two players.
@@ -79,6 +91,13 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
+    
+    conn = connect()
+    if conn != None:
+    	cur = conn.cursor()
+    	cur.execute("INSERT INTO tbl_Matches (winner_id, loser_id, result) values (%s, %s, true);", {winner, loser})
+    	cur.close()
+    	conn.close()
  
  
 def swissPairings():

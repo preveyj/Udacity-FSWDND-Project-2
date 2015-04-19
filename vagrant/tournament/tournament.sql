@@ -37,14 +37,12 @@ create database tournament;
 --tbl_players table
 create table tbl_players (
 	id serial primary key,
-	name varchar(255) not null,
-	tournament_id int not null
+	name varchar(255) not null
 );
 	
 --tbl_matches table
 CREATE TABLE tbl_matches (
     id serial primary key,
-    tournament_id integer NOT NULL,
     winner_id integer NOT NULL,
     loser_id integer NOT NULL,
     result boolean NOT NULL
@@ -59,16 +57,11 @@ CREATE TABLE tbl_matches (
 --	select top 1 id
 --	from players left outer join matches on players.id = matches.loser_id
 --	order by count(matches.loser_id) desc
-			
---vw_current_tournament view:
-create view vw_current_tournament as
-select max(id) as id
-from tbl_tournaments;
 		
 --vw_wincount view:
 create view vw_wincount as
 	select tbl_matches.winner_id, count(tbl_matches.winner_id) as wins 
-	from tbl_matches inner join vw_current_tournament on tbl_matches.tournament_id = vw_current_tournament.id 
+	from tbl_matches
 	where tbl_matches.result = true 
 	group by tbl_matches.winner_id 
 	order by wins desc;
@@ -78,10 +71,10 @@ create view vw_opponents as
 	select distinct a, b 
 	from (
 		select winner_id as a, loser_id as b 
-		from tbl_matches inner join vw_current_tournament on tbl_matches.tournament_id = vw_current_tournament.id
+		from tbl_matches
 		union 
 		select loser_id as a, winner_id as b 
-		from tbl_matches inner join vw_current_tournament on tbl_matches.tournament_id = vw_current_tournament.id
+		from tbl_matches
 	) 
 	as opponents 
 	order by a, b;
@@ -95,13 +88,13 @@ inner join vw_wincount as omw on vw_opponents.b = omw.winner_id
 inner join tbl_players on wins.winner_id = tbl_players.id
 left outer join (
 	select tbl_matches.winner_id, count(tbl_matches.winner_id) as wincount 
-	from tbl_matches inner join vw_current_tournament on tbl_matches.tournament_id = vw_current_tournament.id
+	from tbl_matches
 	where loser_id > 0
 	group by tbl_matches.winner_id
 ) as won_matches on wins.winner_id = won_matches.winner_id 
 left outer join (
 	select tbl_matches.loser_id, count(tbl_matches.loser_id) as losscount 
-	from tbl_matches inner join vw_current_tournament on tbl_matches.tournament_id = vw_current_tournament.id
+	from tbl_matches
 	group by tbl_matches.loser_id
 ) as losses on wins.winner_id = losses.loser_id
 group by wins.winner_id, tbl_players.id, wins.wins, matchcount 
