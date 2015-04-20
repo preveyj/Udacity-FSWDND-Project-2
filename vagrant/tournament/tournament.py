@@ -105,18 +105,19 @@ def playerStandings():
 	"""
 	return results
 
-def reportMatch(winner, loser):
+def reportMatch(winner, loser, result = None):
 	"""Records the outcome of a single match between two players.
 
 	Args:
 	  winner:  the id number of the player who won
 	  loser:  the id number of the player who lost
 	"""
-	
+	if result is None:
+		result = True
 	conn = connect()
 	if conn != None:
 		cur = conn.cursor()
-		cur.execute("INSERT INTO tbl_Matches (winner_id, loser_id, result) values (%s, %s, true);", (winner, loser))
+		cur.execute("INSERT INTO tbl_Matches (winner_id, loser_id, result) values (%s, %s, %s);", (winner, loser, result))
 		conn.commit()
 		cur.close()
 		conn.close()
